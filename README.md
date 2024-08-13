@@ -19,11 +19,13 @@ This is the Windows dotfiles. If you are looking for Linux dots, or macOS please
 ### Media
 * Voicemeeter Potato (Mixing of Razer Seiren Mini, and Virtual Inputs to multiple outputs.)
 * Ableton Live 12 (Same purpose at VM-P)
-
-### Gaming
 * Spicetify (complement of Spotify)
 * Vencord (complement of Discord)
 * BetterDiscord (complement of Discord Canary)
+
+### Gaming
+* Heroic Launcher
+* Steam
 
 
 *On this specific branch, there is going to be more scripts than actual dots, for me to re-deploy windows.*
