@@ -18,7 +18,12 @@ git clone https://github.com/UltimatePlayer97/dotfiles.git
 cd dotfiles
 ```
 
-Now, move the dot files into `hypr` config directory
+Now, move the Hyprland dotfiles into `hypr` config directory
 ```
 cp -r hypr/ ~/.config/hypr/
+```
+
+And fastfetch dotfiles into `fastfetch ` config directory
+```
+cp fastfetch/config.jsonc ~/.config/fastfetch/
 ```
