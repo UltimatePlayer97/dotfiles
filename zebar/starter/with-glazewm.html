@@ -26,7 +26,7 @@
     <script type="text/babel" data-type="module">
       import React, { useState, useEffect } from "https://esm.sh/react@18?dev";
       import { createRoot } from "https://esm.sh/react-dom@18/client?dev";
-      import * as zebar from "https://esm.sh/zebar@2";
+      import * as zebar from "https://esm.sh/zebar@3.0";
 
       const providers = zebar.createProviderGroup({
         network: { type: "network" },
@@ -36,18 +36,34 @@
         battery: { type: "battery" },
         memory: { type: "memory" },
         weather: { type: "weather" },
+        systray: { type: "systray" },
       });
 
       createRoot(document.getElementById("root")).render(<App />);
 
       function App() {
         const [output, setOutput] = useState(providers.outputMap);
+        const [systrayDropdownOpen, setSystrayDropdownOpen] = useState(false);
 
         useEffect(() => {
           providers.onOutput(() => setOutput(providers.outputMap));
         }, []);
 
-        // Get icon to show for current network status.
+        useEffect(() => {
+          function handleClickOutside(event) {
+            if (
+              systrayDropdownOpen &&
+              !event.target.closest(".systray-dropdown")
+            ) {
+              setSystrayDropdownOpen(false);
+            }
+          }
+
+          document.addEventListener("mousedown", handleClickOutside);
+          return () =>
+            document.removeEventListener("mousedown", handleClickOutside);
+        }, [systrayDropdownOpen]);
+
         function getNetworkIcon(networkOutput) {
           switch (networkOutput.defaultInterface?.type) {
             case "ethernet":
@@ -69,7 +85,6 @@
           }
         }
 
-        // Get icon to show for how much of the battery is charged.
         function getBatteryIcon(batteryOutput) {
           let iconClass = "nf nf-fa-battery_0";
           let levelClass = "low";
@@ -91,7 +106,6 @@
           return <i className={`${iconClass} ${levelClass}`}></i>;
         }
 
-        // Get icon to show for current weather status.
         function getWeatherIcon(weatherOutput) {
           switch (weatherOutput.status) {
             case "clear_day":
@@ -119,6 +133,33 @@
             case "thunder_night":
               return <i className="nf nf-weather-night_alt_lightning"></i>;
           }
+        }
+
+        function filterSystemIcons(icons) {
+          const systemIconKeywords = [
+            "battery",
+            "power",
+            "network",
+            "wifi",
+            "ethernet",
+            "internet",
+            "sound",
+            "audio",
+            "volume",
+            "speaker",
+            "microphone",
+            "bluetooth",
+            "windows security",
+            "action center",
+            "notification",
+          ];
+
+          return icons.filter((icon) => {
+            const tooltip = icon.tooltip.toLowerCase();
+            return !systemIconKeywords.some((keyword) =>
+              tooltip.includes(keyword)
+            );
+          });
         }
 
         return (
@@ -165,8 +206,6 @@
               {output.cpu && (
                 <div className="cpu">
                   <i className="nf nf-oct-cpu"></i>
-
-                  {/* Change the text color if the CPU usage is high. */}
                   <span className={output.cpu.usage > 85 ? "high-usage" : ""}>
                     {Math.round(output.cpu.usage)}%
                   </span>
@@ -175,7 +214,6 @@
 
               {output.battery && (
                 <div className="battery">
-                  {/* Show icon for whether battery is charging. */}
                   {output.battery.isCharging && (
                     <i className="nf nf-md-power_plug charging-icon"></i>
                   )}
@@ -188,6 +226,47 @@
                 <div className="weather">
                   {getWeatherIcon(output.weather)}
                   {Math.round(output.weather.celsiusTemp)}°C
+                </div>
+              )}
+            </div>
+
+            {/* New separate systray section */}
+            <div className="systray-section">
+              {output.systray && output.systray.icons.length > 0 && (
+                <div className="systray-dropdown">
+                  <button
+                    className="systray-trigger"
+                    onClick={() => setSystrayDropdownOpen(!systrayDropdownOpen)}
+                    title="System Tray"
+                  >
+                    <i className="nf nf-md-apps"></i>
+                  </button>
+
+                  {systrayDropdownOpen && (
+                    <div className="systray-dropdown-content">
+                      {filterSystemIcons(output.systray.icons).map((icon) => (
+                        <div
+                          key={icon.id}
+                          className="systray-dropdown-item"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            output.systray.onLeftClick(icon.id);
+                          }}
+                          onContextMenu={(e) => {
+                            e.preventDefault();
+                            output.systray.onRightClick(icon.id);
+                          }}
+                          title={icon.tooltip}
+                        >
+                          <img
+                            className="systray-icon"
+                            src={icon.iconUrl}
+                            alt={icon.tooltip}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
