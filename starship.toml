@@ -1,0 +1,114 @@
+"$schema" = "https://starship.rs/config-schema.json"
+
+palette = "waybar_gradient"
+
+format = """
+[](fg:base0)\
+$os\
+$username\
+[](fg:base0 bg:base1)\
+$directory\
+[](fg:base1 bg:base2)\
+$git_branch\
+$git_status\
+[](fg:base2 bg:base3)\
+$nodejs\
+$rust\
+$golang\
+$python\
+[](fg:base3 bg:base4)\
+$time\
+[](fg:base4 bg:base5)\
+$cmd_duration\
+[](fg:base5)\
+$line_break\
+$character
+"""
+
+# --- OS / User (darkest) ---
+[os]
+disabled = false
+style = "fg:text bg:base0"
+
+[username]
+show_always = true
+style_user = "fg:text bg:base0"
+style_root = "fg:error bg:base0"
+format = "[ $user ]($style)"
+
+# --- Directory ---
+[directory]
+style = "fg:text bg:base1"
+format = "[ $path ]($style)"
+truncation_length = 3
+truncation_symbol = "…/"
+
+# --- Git ---
+[git_branch]
+symbol = ""
+style = "fg:text bg:base2"
+format = "[ $symbol $branch ]($style)"
+
+[git_status]
+style = "fg:text bg:base2"
+format = "[ $all_status$ahead_behind ]($style)"
+
+# --- Languages ---
+[nodejs]
+symbol = "󰎙"
+style = "fg:text bg:base3"
+format = "[ $symbol ]($style)"
+
+[rust]
+symbol = ""
+style = "fg:text bg:base3"
+format = "[ $symbol ]($style)"
+
+[golang]
+symbol = ""
+style = "fg:text bg:base3"
+format = "[ $symbol ]($style)"
+
+[python]
+symbol = ""
+style = "fg:text bg:base3"
+format = "[ $symbol ]($style)"
+
+# --- Time ---
+[time]
+disabled = false
+time_format = "%R"
+style = "fg:base0 bg:base4"
+format = "[  $time ]($style)"
+
+# --- Cmd Duration (lightest) ---
+[cmd_duration]
+style = "fg:text bg:base5"
+format = "[  $duration ]($style)"
+min_time_to_notify = 45000
+
+# --- Prompt Character ---
+[character]
+success_symbol = "[❯](bold fg:success)"
+error_symbol = "[❯](bold fg:error)"
+vimcmd_symbol = "[❮](bold fg:accent)"
+
+[line_break]
+disabled = true
+
+# --- Palette tuned to Waybar / Wofi / Mako ---
+[palettes.waybar_gradient]
+text = "#c6d0f5"
+accent = "#99d1db"
+success = "#a6d189"
+error = "#e78284"
+
+base0 = "#1a1b26"
+base1 = "#222334"
+base2 = "#292a35"
+base3 = "#30314a"
+base4 = "#3a3b55"
+base5 = "#44456a"
+
+[os.symbols]
+CachyOS = ""
